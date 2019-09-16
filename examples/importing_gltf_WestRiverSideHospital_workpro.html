@@ -39,7 +39,7 @@
     <div id="list" class="content">
         <h1><a>Công việc</a> / BIM</h1>
     </div>
-    <div>
+    <div id="list_task" style="display: block;">
         <div class="workpro_task" value="_5077" onclick="task_click(this);"># _5077 / Sino Support</div>
         <div class="workpro_task" value="_3925" onclick="task_click(this);"># _3925 / Kết Cấu Coteccons</div>
         <div class="workpro_task" value="_5319" onclick="task_click(this);"># _5319 / Kết Cấu Unicons</div>
@@ -49,6 +49,11 @@
         <div class="workpro_task" value="_4077" onclick="task_click(this);"># _4077 / Sino Support</div>
         <div class="workpro_task" value="_4925" onclick="task_click(this);"># _4925 / Kết Cấu Coteccons</div>
         <div class="workpro_task" value="_5219" onclick="task_click(this);"># _5219 / Sino Support</div>
+    </div>
+    <div>
+        <br>
+        <div class="" onclick="takslist();">Ẩn / Hiện Công việc</div>
+        <br>
     </div>
 </div>
 
@@ -66,7 +71,13 @@
         edgeThreshold: 3,
         ghosted: true
     });
-
+    function takslist() {
+        let list_task_display = document.getElementById("list_task").style.display;
+        if(list_task_display == "none") 
+            document.getElementById("list_task").style.display = 'block';
+        else
+            document.getElementById("list_task").style.display = 'none';
+    };
     structure.on("loaded", function() {
         structure.edges = true;
        

@@ -82,13 +82,12 @@
     };
 
     var files = {
-        "WorkPro": [
+        "Giai Đoạn 1": [
             //"importing_gltf_WestRiverSideHospital",
             "importing_gltf_WestRiverSideHospital_workpro",
             //"importing_gltf_OfficePlan",
             "importing_gltf_OfficePlan_workpro",
-            //"importing_gltf_ModernOffice",
-            "importing_gltf_ModernOffice_workpro",
+            
             //"effects_demo_housePlan",
             "effects_demo_housePlan_workpro",
             //"importing_gltf_Schependomlaan",
@@ -97,13 +96,17 @@
             "importing_gltf_BranchHouse_workpro",
             //"importing_obj_conferenceRoom",
             "importing_obj_conferenceRoom_workpro",
+            //"importing_gltf_ModernOffice",
+            "importing_gltf_ModernOffice_workpro",
+          
+        ],
+        "Giai Đoạn 2": [
            // "importing_obj_geometry_CyberCity3D",
             "importing_obj_geometry_CyberCity3D_workpro",
             //"camera_CameraControl",
             "camera_CameraControl_workpro",
             //"importing_gltf_explorer",
             "importing_gltf_explorer_workpro",
-           
         ]
     };
 
@@ -134,7 +137,7 @@
 
     // Table of contents
     var div = document.createElement('h2');
-    div.textContent = "Contents";
+    div.textContent = "Nhóm";
 
     container.appendChild(div);
     container.appendChild(document.createElement('hr'));
@@ -181,11 +184,11 @@
             }
             (function (file) {
                 var name = file.split('_');
-                name.shift();
-                name = name.join(' / ');
+                //name.shift();
+                //name = name.join(' / ');
                 var div = document.createElement('div');
                 div.className = 'link';
-                div.textContent = name; // expandCamel(name);
+                div.textContent = "BIM " + name[name.length - 2]; // expandCamel(name);
                 div.addEventListener('click', function () {
                     clickedFile = file;
                     window.location.hash = "#" + file;
