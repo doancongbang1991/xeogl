@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/models/glTFModel.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+    <!-- workpro -->
+    <script src="js/helpers/aabbHelper.js"></script>
+    <script src="js/annotations/pin.js"></script>
+<script src="js/annotations/annotation.js"></script>
+
+<link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+<body>
+
+<div id="info" hidden>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing Schependomlaan IFC model from glTF</h1>
+    <br>
+    <ul>
+        <li>IFC model from <a href='https://github.com/openBIMstandards/DataSetSchependomlaan' target="_parent">github.com/openBIMstandards</a></li>
+        <li>IFC converted to COLLADA using <a href='http://ifcopenshell.org/ifcconvert.html' target="_parent">IfcConvert</a></li>
+        <li>COLLADA converted to glTF using <a href='https://github.com/KhronosGroup/COLLADA2GLTF' target="_parent">COLLADA2GLTF</a></li>
+        <li>viewed in xeogl using a <a href='../docs/classes/GLTFModel.html' target="_parent">GLTFModel</a> component</li>
+    </ul>
+</div>
+
+
+<script>
+
+    var model = new xeogl.GLTFModel({
+        src: "models/gltf/schependomlaan/schependomlaan.gltf"
+    });
+
+    var annotations = [];
+
+    model.on("loaded", function() {
+        model.edges = true;
+       
+// Create three annotations on meshes
+   // within the model
+
+   var a1 = new xeogl.Annotation({
+       mesh: model.meshes[1], // Red handle
+       primIndex: 125,
+       bary: [0.3, 0.3, 0.3],
+       occludable: true,
+       glyph: "1",
+       title: "Handle",
+       desc: "This is the handle. It allows us to grab onto the saw so we can hold it and make things with it.",
+       eye: [-355.481, -0.871, 116.711],
+       look: [-227.456, -57.628, 5.428],
+       up: [0.239, 0.948, -0.208],
+       pinShown: true,
+       labelShown: false
+   });
+
+   var a2 = new xeogl.Annotation({
+       mesh: model.meshes[2], // Red handle and cover
+       primIndex: 10260,
+       bary: [0.333, 0.333, 0.333],
+       occludable: true,
+       glyph: "2",
+       title: "Handle and cover",
+       desc: "This is the handle and cover. It provides something grab the saw with, and covers the things inside.",
+       eye: [-123.206, -4.094, 169.849],
+       look: [-161.838, -37.875, 37.313],
+       up: [-0.066, 0.971, -0.228],
+       pinShown: true,
+       labelShown: false
+   });
+
+  
+   // When each annotation's pin is clicked, we'll show the
+   // annotation's label and fly the camera to the
+   // annotation's vantage point
+
+   var cameraFlight = new xeogl.CameraFlightAnimation();
+   var lastAnnotation;
+
+   function pinClicked(annotation) {
+       if (lastAnnotation) {
+           annotation.labelShown = false;
+       }
+       annotation.labelShown = true;
+       cameraFlight.flyTo(annotation);
+       lastAnnotation = annotation;
+   }
+
+   a1.on("pinClicked", pinClicked);
+   a2.on("pinClicked", pinClicked);
+  
+   // If desired, we can also dynamically track the Cartesian coordinates
+   // of each annotation in Local and World coordinate spaces
+
+   a1.on("localPos", function(localPos) {
+       console.log("Local pos changed: " + JSON.stringify(localPos, null, "\t"));
+   });
+
+   a1.on("worldPos", function(worldPos) {
+       console.log("World pos changed: " + JSON.stringify(worldPos, null, "\t"));
+   });
+
+
+    });
+
+    var scene = model.scene;
+    var camera = scene.camera;
+    var input = scene.input;
+
+    camera.eye = [-14.63, 22.88, 10.04];
+    camera.look = [10.98, 5.82, -11.23];
+    camera.up = [0.35, 0.88, -0.29];
+
+    var cameraControl = new xeogl.CameraControl({
+//        panToPointer: true,
+//        pivoting: true
+    });
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+
+    cameraControl.on("hoverEnter", function (hit) {
+        hit.mesh.highlighted = true;
+    });
+
+    cameraControl.on("hoverOut", function (hit) {
+        hit.mesh.highlighted = false;
+    });
+
+    cameraControl.on("picked", function (hit) {
+        var mesh = hit.mesh;
+        if (input.keyDown[input.KEY_SHIFT]) {
+            mesh.selected = !mesh.selected;
+            mesh.highlighted = !mesh.selected;
+        } else {
+            cameraFlight.flyTo(mesh);
+        }
+    });
+
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(model);
+    });
+
+</script>
+</body>
+</html>

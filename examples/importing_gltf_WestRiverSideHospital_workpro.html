@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+    <script src="../build/xeogl.js"></script>
+
+    <!--<script src="js/models/glTFModel.js"></script>-->
+    <script src="js/models/glTFModel.js"></script>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+    <!-- workpro -->
+    <script src="js/helpers/aabbHelper.js"></script>
+    <script src="js/annotations/pin.js"></script>
+<script src="js/annotations/annotation.js"></script>
+
+<link href="js/annotations/annotation-style.css" rel="stylesheet"/>
+<body>
+
+<div id="info" hidden>
+    <h1><a href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> - importing Autodesk West Riverside
+        Hospital IFC models from glTF</h1>
+    <br>
+    <ul>
+        <li>loading five large, unoptimized glTF models - be patient!</li>
+        <li>use the menu on the right to show/hide/emphasize each model</li>
+        
+    </ul>
+</div>
+
+<div id="dat-gui-container">
+</div>
+
+<div id="contents" class="container" style="height: auto;">
+    <div id="list" class="content">
+        <h1><a>Công việc</a> / BIM</h1>
+    </div>
+    <div>
+        <div class="workpro_task" value="_5077" onclick="task_click(this);"># _5077 / Sino Support</div>
+        <div class="workpro_task" value="_3925" onclick="task_click(this);"># _3925 / Kết Cấu Coteccons</div>
+        <div class="workpro_task" value="_5319" onclick="task_click(this);"># _5319 / Kết Cấu Unicons</div>
+        <div class="workpro_task" value="_5067" onclick="task_click(this);"># _5067 / Kết Cấu Unicons</div>
+        <div class="workpro_task" value="_3725" onclick="task_click(this);"># _3725 / Sino Support</div>
+        <div class="workpro_task" value="_4319" onclick="task_click(this);"># _4319 / Kết Cấu Coteccons</div>
+        <div class="workpro_task" value="_4077" onclick="task_click(this);"># _4077 / Sino Support</div>
+        <div class="workpro_task" value="_4925" onclick="task_click(this);"># _4925 / Kết Cấu Coteccons</div>
+        <div class="workpro_task" value="_5219" onclick="task_click(this);"># _5219 / Sino Support</div>
+    </div>
+</div>
+
+<script>
+    let searchParams = new URLSearchParams(window.location.search);
+    let project = {
+        task: searchParams.get('task'),
+    };
+    var init_task = null;
+    var structure = new xeogl.GLTFModel({
+        id: "structure",
+        loaded: true,
+        src: "models/gltf/WestRiverSideHospital/structure.gltf",
+        lambertMaterials: true,
+        edgeThreshold: 3,
+        ghosted: true
+    });
+
+    structure.on("loaded", function() {
+        structure.edges = true;
+       
+// Create three annotations on meshes
+   // within the model
+
+   var a1 = new xeogl.Annotation({
+       mesh: structure.meshes['_5077'], // Red handle
+    
+       occludable: true,
+       glyph: "1",
+       title: "# _5077",
+       desc: "Note for task _5077",
+       pinShown: true,
+       labelShown: false
+   });
+   var a2 = new xeogl.Annotation({
+       mesh: structure.meshes['_3925'], // Red handle
+    
+       occludable: true,
+       glyph: "2",
+       title: "# _3925",
+       desc: "Note for task _3925",
+       pinShown: true,
+       labelShown: false
+   });
+   var a3 = new xeogl.Annotation({
+       mesh: structure.meshes['_4925'], // Red handle
+    
+       occludable: true,
+       glyph: "3",
+       title: "# _4925",
+       desc: "Note for task _4925",
+       pinShown: true,
+       labelShown: false
+   });
+
+//    var a2 = new xeogl.Annotation({
+//        mesh: structure.meshes[2], // Red handle and cover
+//        primIndex: 10260,
+//        bary: [0.333, 0.333, 0.333],
+//        occludable: true,
+//        glyph: "2",
+//        title: "WorkPro 3D Model",
+//        desc: "#Task 02",
+//        eye: [-123.206, -4.094, 169.849],
+//        look: [-161.838, -37.875, 37.313],
+//        up: [-0.066, 0.971, -0.228],
+//        pinShown: true,
+//        labelShown: false
+//    });
+//    var a3 = new xeogl.Annotation({
+//        mesh: structure.meshes[2], // Red handle and cover
+//        primIndex: 10260,
+//        bary: [0.333, 0.333, 0.333],
+//        occludable: true,
+//        glyph: "2",
+//        title: "WorkPro 3D Model",
+//        desc: "#Task 02",
+//        eye: [-124.206, -4.094, 169.849],
+//        look: [-165.838, -37.875, 37.313],
+//        up: [-0.066, 0.971, -0.228],
+//        pinShown: true,
+//        labelShown: false
+//    });
+  
+   // When each annotation's pin is clicked, we'll show the
+   // annotation's label and fly the camera to the
+   // annotation's vantage point
+
+//    var cameraFlight = new xeogl.CameraFlightAnimation();
+    var lastAnnotation;
+
+   function pinClicked(annotation) {
+       if (lastAnnotation) {
+        lastAnnotation.labelShown = false;
+       }
+       annotation.labelShown = true;
+       // cameraFlight.flyTo(annotation);
+       lastAnnotation = annotation;
+   }
+
+    a1.on("pinClicked", pinClicked);
+    a2.on("pinClicked", pinClicked);
+    a3.on("pinClicked", pinClicked);
+  
+   // If desired, we can also dynamically track the Cartesian coordinates
+   // of each annotation in Local and World coordinate spaces
+
+//    a1.on("localPos", function(localPos) {
+//        console.log("Local pos changed: " + JSON.stringify(localPos, null, "\t"));
+//    });
+
+//    a1.on("worldPos", function(worldPos) {
+//        console.log("World pos changed: " + JSON.stringify(worldPos, null, "\t"));
+//    });
+        if (project.task != null){
+            // if( previous_mesh != null)
+            //     previous_mesh.selected = false;
+            let init_mesh = structure.meshes[project.task];
+            cameraFlight.flyTo(init_mesh);
+            init_mesh.selected = true;
+            init_task = init_mesh;
+        }
+        document.getElementsByClassName("close-button")[0].click();
+
+    });
+
+    function task_click(e) {
+        if( previous_mesh != null)
+            previous_mesh.selected = false;
+        let init_mesh = structure.meshes[e.getAttribute('value')];
+        cameraFlight.flyTo(init_mesh);
+        init_mesh.selected = true;
+        previous_mesh = init_mesh;
+    };
+    var sprinklers = new xeogl.GLTFModel({
+        id: "sprinklers",
+        loaded: false,
+        src: "models/gltf/WestRiverSideHospital/sprinklers.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        selected: false,
+        highlighted: false
+    });
+
+    var fireAlarms = new xeogl.GLTFModel({
+        id: "fireAlarms",
+        loaded: false,
+        src: "models/gltf/WestRiverSideHospital/fireAlarms.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        selected: false,
+        highlighted: false
+    });
+
+    var electrical = new xeogl.GLTFModel({
+        id: "electrical",
+        loaded: false,
+        src: "models/gltf/WestRiverSideHospital/electrical.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        highlighted: false
+    });
+
+    var plumbing = new xeogl.GLTFModel({
+        id: "plumbing",
+        loaded: false,
+        src: "models/gltf/WestRiverSideHospital/plumbing.gltf",
+        lambertMaterials: true,
+        ghosted: false,
+        selected: false,
+        highlighted: false
+    });
+
+    var scene = structure.scene;
+    var camera = scene.camera;
+    var input = scene.input;
+
+    input.on("dblclick", function(coords) {
+      console.log("Double-click at: x=" + coords[0] + ", y=" + coords[1]);
+    });
+
+    input.on("mouseclicked", function(coords) {
+     console.log("Mouse clicked at: x=" + coords[0] + ", y=" + coords[1]);
+     
+});
+
+
+    scene.ghostMaterial.preset = "defaultDarkBG";
+    scene.ghostMaterial.edges = false;
+    scene.ghostMaterial.edgeAlpha = 0.3;
+    scene.ghostMaterial.fillAlpha = 0.3;
+
+    camera.eye = [133.72, 235.56, -174.37];
+    camera.look = [8.71, 142.89, -73.77];
+    camera.up = [-0.38, 0.86, 0.30];
+
+    var cameraControl = new xeogl.CameraControl({
+        doublePickFlyTo: false,
+        firstPerson: true
+    });
+
+    var cameraFlight = new xeogl.CameraFlightAnimation();
+    
+    cameraControl.on("hoverEnter", function (hit) {
+        hit.mesh.highlighted = true;
+        //console.log(hit);
+    });
+
+    cameraControl.on("hoverOut", function (hit) {
+        hit.mesh.highlighted = false;
+    });
+
+    var previous_mesh = null;
+
+    cameraControl.on("picked", function (hit) {
+        if( init_task != null)
+            init_task.selected = false;
+        
+        if( previous_mesh != null)
+            previous_mesh.selected = false;
+        var mesh = hit.mesh;
+        if (input.keyDown[input.KEY_SHIFT]) {
+            mesh.selected = !mesh.selected;
+            mesh.highlighted = !mesh.selected;
+        } else {
+            cameraFlight.flyTo(mesh);
+            mesh.selected = true;
+        }
+        console.log(hit);
+        previous_mesh = hit.mesh;
+    });
+
+    cameraControl.on("pickedNothing", function (hit) {
+        cameraFlight.flyTo(scene);
+    });
+
+    var culling = false;
+    var timeout;
+    var culled = false;
+
+    camera.on("viewMatrix", function () {
+
+        if (!culling) {
+            return;
+        }
+
+        if (!culled) {
+            sprinklers.culled = true;
+            electrical.culled = true;
+            plumbing.culled = true;
+            fireAlarms.culled = true;
+            culled = true;
+        }
+
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+
+        timeout = setTimeout(function () {
+            sprinklers.culled = false;
+            electrical.culled = false;
+            plumbing.culled = false;
+            fireAlarms.culled = false;
+            culled = false;
+            timeout = null;
+        }, 100);
+    });
+
+    var gui = new dat.GUI({autoPlace: false, top: 0, right: 10, width: 350});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var modelIds = Object.keys(scene.models);
+
+    var Menu = function () {
+
+        this.message = "Models";
+
+        for (var i = 0; i < modelIds.length; i++) {
+            var modelId = modelIds[i];
+            var model = scene.models[modelId];
+            this[modelId + ".id"] = model.id;
+            this[modelId + ".loaded"] = model.loaded;
+            this[modelId + ".visible"] = model.visible;
+            this[modelId + ".ghosted"] = model.ghosted;
+            this[modelId + ".selected"] = model.selected;
+            this[modelId + ".highlighted"] = model.highlighted;
+        }
+
+        var self = this;
+
+        var update = function () {
+            for (var i = 0; i < modelIds.length; i++) {
+                var modelId = modelIds[i];
+                var model = scene.models[modelId];
+                var loaded = self[modelId + ".loaded"];
+                if (model.loaded !== loaded) {
+                    model.loaded = loaded;
+                }
+                var visible = self[modelId + ".visible"];
+                if (model.visible !== visible) {
+                    model.visible = visible;
+                }
+                var ghosted = self[modelId + ".ghosted"];
+                if (model.ghosted !== ghosted) {
+                    model.ghosted = ghosted;
+                }
+                var selected = self[modelId + ".selected"];
+                if (model.selected !== selected) {
+                    model.selected = selected;
+                }
+                var highlighted = self[modelId + ".highlighted"];
+                if (model.highlighted !== highlighted) {
+                    model.highlighted = highlighted;
+                }
+            }
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var menu = new Menu();
+
+    for (var i = 0; i < modelIds.length; i++) {
+        var modelId = modelIds[i];
+        var model = scene.models[modelId];
+        var folder = gui.addFolder(modelId);
+        folder.add(menu, modelId + ".loaded", model.loaded);
+        folder.add(menu, modelId + ".visible", model.visible);
+        folder.add(menu, modelId + ".ghosted", model.ghosted);
+        folder.add(menu, modelId + ".selected", model.selected);
+        folder.add(menu, modelId + ".highlighted", model.highlighted);
+        folder.open();
+    }
+
+</script>
+</body>
+</html>
